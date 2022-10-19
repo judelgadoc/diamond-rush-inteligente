@@ -1,0 +1,44 @@
+### Características
+Toca recolectar todos los diamantes para desbloquear la salida
+
+Los pinchos se pueden pasar una vez pero luego se activan y se comportan como una pared
+
+La lava es infranqueable y puede destruir rocas encima de ellas
+
+Una roca puede moverse o bloquar el paso(cuando se enfrenta a otra roca o a una pared), puede caer en un hueco para abrir el paso o desaparecer con la lava
+puede mantener presionado un botón, puede ponerse encima de llaves o diamantes, 
+puede ponerse encima de la salida bloqueada pero una vez hecho esto no se puede quitar, si se pone encima de salida desbloqueada sí se puede quitar
+
+Una puerta metálica se abre con un botón que toca mantener presionado
+
+Una puerta se abre con una llave, ambos desaparecen al abrirla, no se pueden recoger varias llaves
+
+Un hueco puede taparse con una roca, haciendola inservible pero permitiendo pasar por el hueco
+
+
+### Modelo
+Se define una matriz E que va a ser el modelo del entorno, la matriz es de 15 filas y 10 columnas, cada celda representa 64x64 pixeles de una imagen estandar del juego
+La matriz será de enteros, donde el siguiente mapeo indica cómo se representan los distintos objetos que se pueden encontrar en un nivel
+
+
+Jugador
+Jugador con llave
+Jugador encima de pinchos
+Salida bloqueada
+Salida desbloqueada
+Diamante
+Llave
+Botón
+Pinchos desactivados
+Puerta metálica desactivada
+Puerta
+Hueco tapado
+Pared
+Pinchos activados
+Hueco destapado
+Lava
+Roca
+Roca encima de llave
+Roca encima de diamante
+Roca encima de salida bloqueada
+Roca encima de botón
