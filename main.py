@@ -17,7 +17,8 @@ y = 0
 j = position[0]
 i = position[1]
 time.sleep(1)
-moves = "up up down down left right left right right right right".split(" ")
+#moves = "up up down down left right left right right right right".split(" ")
+moves = "right right right right right down down down down left left left left left down down right down right right right".split(" ")
 for move in moves:
     swapIndex = movement.setMove(move)
     MAP = movement.swap(MAP, position, swapIndex)

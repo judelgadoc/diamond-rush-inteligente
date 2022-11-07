@@ -56,7 +56,7 @@ def signalMove(move):
         pyautogui.keyUp('left')
     else:
         print("What are you doing? o.O")
-    
+    time.sleep(0.1)
 def setMove(move):
     if(move =='up'):    
         y = j-1
