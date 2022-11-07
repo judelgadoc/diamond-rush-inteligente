@@ -44,41 +44,78 @@ i = position[1]
 def signalMove(move):
     if move =='up':    
         pyautogui.keyDown('up')
+        time.sleep(.135)
         pyautogui.keyUp('up')
     elif move =='down':
         pyautogui.keyDown('down')
+        time.sleep(.135)
         pyautogui.keyUp('down')
     elif move =='right':
         pyautogui.keyDown('right')
+        time.sleep(.135)
         pyautogui.keyUp('right')
     elif move =='left':
         pyautogui.keyDown('left')
+        time.sleep(.135)
         pyautogui.keyUp('left')
     else:
         print("What are you doing? o.O")
     
-def setMove(move):
+def setMove(move, position):
+        
+    x = 0
+    y = 0
     if(move =='up'):    
-        y = j-1
-        x = i
+        y = position[0] - 1
+        x = position[1]
     elif(move =='down'):
-        y = j +1 
-        x = i
+        y = position[0] + 1 
+        x = position[1]
+
     elif(move =='right'):
-        x = i+1
-        y = j
+        x = position[1] + 1
+        y = position[0]
+
     elif(move =='left'):
-        x = i-1
-        y = j
+        x = position[1] - 1
+        y = position[0]
 
     swapIndex = (y, x)
     return swapIndex
 
+def verifyColission(dataOut):
+    result = False
+    if (dataOut == 0):
+        result = True
+    if (dataOut == 7):
+        result = True
+    if (dataOut == 8):
+        result = True
+    if (dataOut == 5):
+        result = False 
+    if (dataOut == 2):
+        result = False 
+    return result
+
 def swap(MAP, pos_in, pos_out):
     dataIn = MAP[pos_in[0]][pos_in[1]]
-    dataOut = MAP[pos_out[0]][pos_out[1]]
-    MAP[pos_out[0]][pos_out[1]] = dataIn
-    MAP[pos_in[0]][pos_in[1]] = dataOut
+    dataOut = MAP[pos_out[0]][pos_out[1]] 
+
+    if (dataOut == 0):
+        MAP[pos_out[0]][pos_out[1]] = dataIn
+        MAP[pos_in[0]][pos_in[1]] = 7
+    if (dataOut == 7):
+        MAP[pos_out[0]][pos_out[1]] = dataIn
+        MAP[pos_in[0]][pos_in[1]] = dataOut
+    if (dataOut == 8):
+        MAP[pos_out[0]][pos_out[1]] = dataIn
+        MAP[pos_in[0]][pos_in[1]] = 7
+    if (dataOut == 5):
+        MAP[pos_out[0]][pos_out[1]] = dataOut
+        MAP[pos_in[0]][pos_in[1]] = dataIn
+    if (dataOut == 2):
+        MAP[pos_out[0]][pos_out[1]] = dataOut
+        MAP[pos_in[0]][pos_in[1]] = dataIn    
     return (MAP)
 
 
@@ -86,7 +123,7 @@ if __name__ == '__main__':
     time.sleep(1)
     moves = "up up down down left right left right".split(" ")
     for move in moves:
-        swapIndex = setMove(move)
+        swapIndex = setMove(move, position)
         MAP = swap(MAP, position, swapIndex)
         position = swapIndex
         x = 0
