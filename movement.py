@@ -80,43 +80,110 @@ def setMove(move, position):
         x = position[1] - 1
         y = position[0]
 
-    swapIndex = (y, x)
+    swapIndex = (y, x, position[2], position[3])
     return swapIndex
 
-def verifyColission(dataOut):
+def verifyColission(dataOut, position):
     result = False
+    ##if next step is a diamond
     if (dataOut == 0):
         result = True
+    # If nex step is floor   
     if (dataOut == 7):
         result = True
+    #If next step its a trap
     if (dataOut == 8):
+        result = True        
+    #If next step its a key
+    if (dataOut == 3):
         result = True
+    #If next step is a wall
     if (dataOut == 5):
         result = False 
+    #If nex step is lava
     if (dataOut == 2):
         result = False 
+    #If next step is blocking door
+    if (dataOut == 9):
+        #If character has collected a key
+        if (position[3]):
+            result = True
+        else: 
+            result = False   
     return result
 
 def swap(MAP, pos_in, pos_out):
     dataIn = MAP[pos_in[0]][pos_in[1]]
     dataOut = MAP[pos_out[0]][pos_out[1]] 
 
+    #If the character is on a trap the trap will block the path
+
+    #swapIndex = (pos_x, pos_y, isTrap, hasKey)
+
+    ##if next step is a diamond 
     if (dataOut == 0):
         MAP[pos_out[0]][pos_out[1]] = dataIn
-        MAP[pos_in[0]][pos_in[1]] = 7
+        if (pos_in[2]):
+            MAP[pos_in[0]][pos_in[1]] = 5
+        else:
+            MAP[pos_in[0]][pos_in[1]] = 7
+        swapIndex = (pos_out[0], pos_out[1], False, pos_in[3])
+
+    # If nex step is floor
     if (dataOut == 7):
         MAP[pos_out[0]][pos_out[1]] = dataIn
-        MAP[pos_in[0]][pos_in[1]] = dataOut
+        if (pos_in[2]):
+            MAP[pos_in[0]][pos_in[1]] = 5
+        else:
+            MAP[pos_in[0]][pos_in[1]] = dataOut
+        swapIndex = (pos_out[0], pos_out[1], False, pos_in[3])
+
+    #If next step its a trap
     if (dataOut == 8):
         MAP[pos_out[0]][pos_out[1]] = dataIn
-        MAP[pos_in[0]][pos_in[1]] = 7
+        if (pos_in[2]):
+            MAP[pos_in[0]][pos_in[1]] = 5
+        else:
+            MAP[pos_in[0]][pos_in[1]] = 7
+        swapIndex = (pos_out[0], pos_out[1], True, pos_in[3])
+           
+    #If next step its a key
+    if (dataOut == 3):
+        MAP[pos_out[0]][pos_out[1]] = dataIn
+        if (pos_in[2]):
+            MAP[pos_in[0]][pos_in[1]] = 5
+        else:
+            MAP[pos_in[0]][pos_in[1]] = 7
+        swapIndex = (pos_out[0], pos_out[1], False, True)
+
+    #If next step is a wall
     if (dataOut == 5):
         MAP[pos_out[0]][pos_out[1]] = dataOut
         MAP[pos_in[0]][pos_in[1]] = dataIn
+        swapIndex = (pos_in[0], pos_in[1], False, pos_in[3])
+
+    #If nex step is lava
     if (dataOut == 2):
         MAP[pos_out[0]][pos_out[1]] = dataOut
         MAP[pos_in[0]][pos_in[1]] = dataIn    
-    return (MAP)
+        swapIndex = (pos_in[0], pos_in[1], False, pos_in[3])
+
+    #If nex step is blocking door
+    if (dataOut == 9):
+        #If has key
+        if (pos_in[3]):       
+            MAP[pos_out[0]][pos_out[1]] = dataIn
+            if (pos_in[2]):
+                MAP[pos_in[0]][pos_in[1]] = 5
+            else:
+                MAP[pos_in[0]][pos_in[1]] = 7
+            swapIndex = (pos_out[0], pos_out[1], False, False)
+        else:
+            MAP[pos_out[0]][pos_out[1]] = dataOut
+            MAP[pos_in[0]][pos_in[1]] = dataIn    
+            swapIndex = (pos_in[0], pos_in[1], False, pos_in[3])
+
+    return (MAP, swapIndex)
 
 
 if __name__ == '__main__':

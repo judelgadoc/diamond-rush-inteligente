@@ -12,18 +12,19 @@ print(MAP)
 x=MAP.flatten().tolist()
 index = x.index(6)
 position = np.unravel_index(index,MAP.shape)
+position = (position[0],position[1], False, False)
 x = 0
 y = 0
 time.sleep(1)
-moves = "right,right,right,right,right,down,down,down,left,left,left,left,left,down,down,right,down,right,right,right,down,right".split(",")
+moves = "left,down,down,right,right,right,right,right,right,down,right,up,up,left,left,down,left,left".split(",")
 for move in moves:
     
     swapIndex = movement.setMove(move, position)    
     dataOut = MAP[swapIndex[0]][swapIndex[1]]
-    canMove = movement.verifyColission(dataOut)
+    canMove = movement.verifyColission(dataOut, position)
     if(canMove):
-        MAP = movement.swap(MAP, position, swapIndex)
-        position = swapIndex
+        swapResult = movement.swap(MAP, position, swapIndex)
+        position = swapResult[1]
         movement.signalMove(move)
     print('-------------------------------------------------------------------------')
     print(MAP)
