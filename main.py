@@ -1,32 +1,29 @@
 import grabber
 import map_reader
 import movement
+import solver
 import time
 import numpy as np
 
 grabber.start()
 
-MAP = map_reader.read_image("E:/Downloads/Diamond/download.png")
-print(MAP)
 
-x=MAP.flatten().tolist()
-index = x.index(6)
-position = np.unravel_index(index,MAP.shape)
-position = (position[0],position[1], False, False)
-x = 0
-y = 0
-j = position[0]
-i = position[1]
-time.sleep(1)
-moves = "left,down,down,right,right,right,right,right,right,down,right,up,up,left,left,down,left,left".split(",")
-for move in moves:
+MAP = map_reader.read_image("/tmp/download.png")
     
-    swapIndex = movement.setMove(move, position)    
-    dataOut = MAP[swapIndex[0]][swapIndex[1]]
-    canMove = movement.verifyColission(dataOut, position)
-    if(canMove):
-        swapResult = movement.swap(MAP, position, swapIndex)
-        position = swapResult[1]
-        movement.signalMove(move)
-    print('-------------------------------------------------------------------------')
-    print(MAP)
+MAP_as_list = MAP.flatten().tolist()
+p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
+goal = np.unravel_index(MAP_as_list.index(4), MAP.shape)
+    
+print("THE MAP IS:\n", MAP)
+print("INDY IS IN THE FOLLOWING COORDINATE:", p)
+print("THE GOAL IS IN THE FOLLOWING COORDINATE:", goal)
+    
+s = solver.Solver(MAP, p, goal)
+path = s.get_path()
+path = s.get_path_as_actions()
+print(path)
+
+moves = path
+
+for move in moves:
+    movement.signalMove(move)

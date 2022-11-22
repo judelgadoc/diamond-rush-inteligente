@@ -87,8 +87,7 @@ class Solver:
     def astar(self):
         while len(self.open_list) > 0:
             current_node = self.get_current_node()
-
-            # Found the goal
+            # Found the goal CHANGE THIS TO GENERIC
             if current_node.position == self.end_node.position and current_node.h == 0:
                 path = []
                 current = current_node
@@ -96,15 +95,17 @@ class Solver:
                     path.append(current.move)
                     current = current.parent
                 print("Solution length:", len(path))
+                print("Simulated map:", current_node.maze, sep="\n")
                 return path[::-1] # Return reversed path
     
             # Generate children
             children = []
-            for new_position in get_allowed_moves(current_node.position[0], current_node.position[1]):
+            for new_position in get_allowed_moves(current_node.position[0], current_node.position[1], current_node.maze):
                 node_position = (current_node.position[0] + new_position[0], current_node.position[1] + new_position[1])
                 new_node = Node(current_node, node_position, new_position, maze=current_node.maze)
-                if new_node.maze[node_position[0]][node_position[1]] == 0:
-                    new_node.maze[node_position[0]][node_position[1]] = 7
+                #if new_node.maze[node_position[0]][node_position[1]] == 0:
+                #    new_node.maze[node_position[0]][node_position[1]] = 7
+                new_node.maze = maze_transition(new_node.maze, node_position, new_position)
                 children.append(new_node)
     
             for child in children:
@@ -131,32 +132,57 @@ class Solver:
         print("Failed solution length:", len(path))
         return path[::-1] # Return reversed path
 
+def maze_transition(maze, position, move):
+    """
+    How changes the maze when the player moves into position (i, j)
+    """
+    i, j = position
+    x, y = move
+    if maze[i][j] == 0:
+        maze[i][j] = 7
+    elif maze[i][j] == 8:
+        maze[i][j] = 5
+    elif maze[i][j] == 12:
+        if  maze[i + x][j + y] == 1:
+            maze[i][j] = 7
+            maze[i + x][i + y] = 7
+        
+    return maze
 
 def get_diamonds(maze):
     maze_flat = maze.flatten()
     return len([np.unravel_index(i, maze.shape) for i in np.where(maze_flat == 0)[0]])
 
-def get_allowed_moves(i, j):
+"""
+def is_move_allowed(maze, position, move):
+    i, j = position
+    x, y = move
+    if maze[i][j] == 12:
+        if maze[i + x][j + x] in [0, 3]:
+            return False
+    return True
+"""
+
+def get_allowed_moves(i, j, maze):
     ans = []
-    if i > 0 and MAP[i - 1][j] != 5:
+    not_allowed = [5, 2]
+    if i > 0 and maze[i - 1][j] not in not_allowed:
         ans.append((-1, 0)) # up
-    if i < 14 and MAP[i + 1][j] != 5:
+    if i < 14 and maze[i + 1][j] not in not_allowed:
         ans.append((1, 0)) # down
-    if j > 0 and MAP[i][j - 1] != 5:
+    if j > 0 and maze[i][j - 1] not in not_allowed:
         ans.append((0, -1)) # left
-    if j < 10 and MAP[i][j + 1] != 5:
+    if j < 10 and maze[i][j + 1] not in not_allowed:
         ans.append((0, 1)) # right
     return ans
 
 
 if __name__ == '__main__':
-    MAP = map_reader.read_image("lvls/l02.png")
+    MAP = map_reader.read_image("lvls/l04.png")
     
     MAP_as_list = MAP.flatten().tolist()
     p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
     goal = np.unravel_index(MAP_as_list.index(4), MAP.shape)
-    MAP_flat = MAP.flatten()
-    print([np.unravel_index(i, MAP.shape) for i in np.where(MAP_flat == 0)[0]])
     
     print("THE MAP IS:\n", MAP)
     print("INDY IS IN THE FOLLOWING COORDINATE:", p)
@@ -164,7 +190,6 @@ if __name__ == '__main__':
     
     s = Solver(MAP, p, goal)
     path = s.get_path()
-    print(path)
     path = s.get_path_as_actions()
     print(path)
     
