@@ -77,7 +77,7 @@ class Solver:
             for j in diamonds:
                 distance_diamond_diamond = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
                 distances_diamonds.append(distance_diamond_diamond)
-        #print("debug_pacman:", distances, distances_diamonds, node)
+        print("debug_pacman:", distances, distances_diamonds, node)
         return min(distances) + max(distances_diamonds) if len(distances) else 0  #max(distances_diamonds)
 
     def number_of_diamonds_heuristic(self, node):
@@ -146,12 +146,17 @@ def maze_transition(maze, position, move):
         if  maze[i + x][j + y] == 1:
             maze[i][j] = 7
             maze[i + x][i + y] = 7
+    elif maze[i][j] == 3:
+        if  maze[i + x][j + y] == 9 and i + x < 10:
+            maze[i][j] = 7
+            maze[i + x][i + y] = 7
         
     return maze
 
 def get_diamonds(maze):
     maze_flat = maze.flatten()
     return len([np.unravel_index(i, maze.shape) for i in np.where(maze_flat == 0)[0]])
+
 
 """
 def is_move_allowed(maze, position, move):
@@ -178,7 +183,7 @@ def get_allowed_moves(i, j, maze):
 
 
 if __name__ == '__main__':
-    MAP = map_reader.read_image("lvls/l04.png")
+    MAP = map_reader.read_image("lvls/l03.png")
     
     MAP_as_list = MAP.flatten().tolist()
     p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
