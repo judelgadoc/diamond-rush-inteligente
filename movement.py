@@ -44,22 +44,23 @@ i = position[1]
 def signalMove(move):
     if move =='up':    
         pyautogui.keyDown('up')
-        time.sleep(.135)
+       # time.sleep(.135)
         pyautogui.keyUp('up')
     elif move =='down':
         pyautogui.keyDown('down')
-        time.sleep(.135)
+      #  time.sleep(.135)
         pyautogui.keyUp('down')
     elif move =='right':
         pyautogui.keyDown('right')
-        time.sleep(.135)
+     #   time.sleep(.135)
         pyautogui.keyUp('right')
     elif move =='left':
         pyautogui.keyDown('left')
-        time.sleep(.135)
+    #    time.sleep(.135)
         pyautogui.keyUp('left')
     else:
         print("What are you doing? o.O")
+    time.sleep(.135)
     
 def setMove(move, position):
         

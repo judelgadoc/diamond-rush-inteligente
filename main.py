@@ -13,7 +13,7 @@ MAP = map_reader.read_image("/tmp/download.png")
 MAP_as_list = MAP.flatten().tolist()
 p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
 goal = np.unravel_index(MAP_as_list.index(4), MAP.shape)
-    
+#goal = (7, 6)    
 print("THE MAP IS:\n", MAP)
 print("INDY IS IN THE FOLLOWING COORDINATE:", p)
 print("THE GOAL IS IN THE FOLLOWING COORDINATE:", goal)
