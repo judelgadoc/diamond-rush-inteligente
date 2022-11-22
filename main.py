@@ -6,27 +6,27 @@ import numpy as np
 
 grabber.start()
 
-MAP = map_reader.read_image("/home/judelgadoc/Downloads/download.png")
+MAP = map_reader.read_image("E:/Downloads/Diamond/download.png")
 print(MAP)
 
 x=MAP.flatten().tolist()
 index = x.index(6)
 position = np.unravel_index(index,MAP.shape)
+position = (position[0],position[1], False, False)
 x = 0
 y = 0
 j = position[0]
 i = position[1]
 time.sleep(1)
-#moves = "up up down down left right left right right right right".split(" ")
-moves = "right right right right right down down down down left left left left left down down right down right right right".split(" ")
+moves = "left,down,down,right,right,right,right,right,right,down,right,up,up,left,left,down,left,left".split(",")
 for move in moves:
-    swapIndex = movement.setMove(move)
-    MAP = movement.swap(MAP, position, swapIndex)
-    position = swapIndex
-    x = 0
-    y = 0
-    j = position[0]
-    i = position[1]
-    movement.signalMove(move)
+    
+    swapIndex = movement.setMove(move, position)    
+    dataOut = MAP[swapIndex[0]][swapIndex[1]]
+    canMove = movement.verifyColission(dataOut, position)
+    if(canMove):
+        swapResult = movement.swap(MAP, position, swapIndex)
+        position = swapResult[1]
+        movement.signalMove(move)
     print('-------------------------------------------------------------------------')
     print(MAP)
