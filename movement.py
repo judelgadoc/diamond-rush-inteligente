@@ -60,7 +60,7 @@ def signalMove(move):
         pyautogui.keyUp('left')
     else:
         print("What are you doing? o.O")
-    time.sleep(.135)
+    time.sleep(.1)
     
 def setMove(move, position):
         
@@ -189,17 +189,8 @@ def swap(MAP, pos_in, pos_out):
 
 if __name__ == '__main__':
     time.sleep(1)
-    moves = "up up down down left right left right".split(" ")
+    moves = ['right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'down', 'right', 'right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'right', 'up', 'right', 'down', 'down', 'down', 'right', 'down', 'up', 'up', 'down', 'left', 'up', 'up', 'right', 'right', 'up', 'right', 'down', 'up', 'up', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'down', 'down', 'left', 'left', 'right']
     for move in moves:
-        swapIndex = setMove(move, position)
-        MAP = swap(MAP, position, swapIndex)
-        position = swapIndex
-        x = 0
-        y = 0
-        j = position[0]
-        i = position[1]
         signalMove(move)
-        print('-------------------------------------------------------------------------')
-        print(MAP)
 
 

@@ -17,8 +17,8 @@ class Node:
         self.f = 0
 
     def __eq__(self, other):
-        if self.parent is not None and other.parent is not None:
-            return self.position == other.position and self.f == other.f and self.g == other.g and self.h == other.h and self.parent.position == other.parent.position
+        #if self.parent is not None and other.parent is not None:
+        #    return self.position == other.position and self.f == other.f and self.g == other.g and self.h == other.h and self.parent.position == other.parent.position
         return self.position == other.position and self.f == other.f and self.g == other.g and self.h == other.h
 
     def __repr__(self):
@@ -65,29 +65,17 @@ class Solver:
             ans.append(actions_map[i])
         return ans
 
-    def manhattan_heuristic(self, node):
-        return abs((node.position[0] - self.end_node.position[0])) + abs((node.position[1] - self.end_node.position[1]))
+    def get_distance(self, pos1, pos2, func="manhattan"):
+        if func == "manhattan":
+            return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+        elif func == "euclid_squared":
+            return (pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2
 
     def pacman_heuristic(self, node):
         distances = []
         distances_diamonds = []
         maze_flat = node.maze.flatten()
         diamonds = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 0)[0]]
-        for i in diamonds:
-            distance_node_diamond = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
-            distances.append(distance_node_diamond)
-            for j in diamonds:
-                distance_diamond_diamond = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
-                distances_diamonds.append(distance_diamond_diamond)
-        #print("debug_pacman:", distances, distances_diamonds, node)
-        return min(distances) + max(distances_diamonds) if len(distances) else 0  #max(distances_diamonds)
-
-    def pacman_heuristic(self, node):
-        distances = []
-        distances_diamonds = []
-        maze_flat = node.maze.flatten()
-        diamonds = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 0)[0]]
-        diamonds += [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 15)[0]]
         for i in diamonds:
             distance_node_diamond = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
             distances.append(distance_node_diamond)
@@ -107,62 +95,61 @@ class Solver:
         maze_flat = node.maze.flatten()
         return len([np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 1)[0]])
     
-    def pacman_with_holes_heuristic(self, node):
-        distances = []
-        distances_holes = []
-        maze_flat = node.maze.flatten()
-        holes = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 1)[0]]
-        for i in holes:
-            distance_node_hole = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
-            distances.append(distance_node_hole)
-            for j in holes:
-                distance_hole_hole = abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] )
-                distances_holes.append(distance_hole_hole)
-        #print("debug_pacman:", distances, distances_diamonds, node)
-        return min(distances) + max(distances_holes) if len(distances) else 0  #max(distances_diamonds)
-
-    # piedra más cercana al hueco más cercano
-    def rock_to_hole_heuristic(self, node):
-        distances = []
-        distances_holes = []
-        maze_flat = node.maze.flatten()
-        holes = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 1)[0]]
-        rocks = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 12)[0]]
-        closest_rock = rocks[np.array([ abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] ) for i in rocks ]).argmin()]
-        closest_hole = holes[np.array([ abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] ) for i in holes ]).argmin()]
-        val = np.array([ abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] ) for i in rocks ]).min()
-        return abs( closest_hole[0] - closest_rock[0] ) + abs( closest_hole[1] - closest_rock[1] ) + val
-
-    def heuristic_holes(self, node):
+    def holes_heuristic(self, node):
+        # TODO: Add the whatsapp explanation
         maze_flat = node.maze.flatten()
         def get_adjs(x, y):
             return [(i + x, j + y) for i,j in [(1, 0), (-1, 0), (0, 1), (0, -1)]]
         rocks = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 12)[0]]
+        rocks += [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 15)[0]]
         holes = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 1)[0]]
-        distances = []
-        distances_holes = []
-        for i,j in rocks:
-            for k in get_adjs(i, j):
-                distances.append(abs( node.position[0] - k[0] ) + abs( node.position[1] - k[1] ))
-            for h, o in holes:
-                distances_holes.append(abs(i - h) + abs(j - o))
-        return min(distances) + max(distances_holes) if len(distances) else 0
+        if len(holes) == 0:
+            print("debug map:", node.maze, sep="\n")
+            a = {(-1, 0): "up", (1, 0): "down", (0, -1): "left", (0, 1): "right"}
+            path = [a[i] for i in self.get_node_path(node)]
+            print("debug_path:", path)
+            return 0
+        closest_rock = rocks[np.array([ abs( node.position[0] - i[0] ) + abs( node.position[1] - i[1] ) for i in rocks ]).argmin()]
+        closest_hole_to_rock = holes[np.array([ abs( closest_rock[0] - i[0] ) + abs( closest_rock[1] - i[1] ) for i in holes ]).argmin()]
+        adjs = get_adjs(closest_rock[0], closest_rock[1])
+        furthest_adj_to_hole = adjs[np.array([ self.get_distance(i, closest_hole_to_rock) for i in adjs ]).argmax()]
+        return self.get_distance(closest_rock, closest_hole_to_rock) + self.get_distance(node.position, furthest_adj_to_hole)
+
+    def general_heuristic(self, node):
+        maze_flat = node.maze.flatten()
+        holes = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 1)[0]]
+        if len(holes) > 0:
+            print("debug: using holes heuristic")
+            return self.holes_heuristic(node)
+        else:
+            print("debug: using pacman heuristic")
+            print("debug map:", node.maze, sep="\n")
+            a = {(-1, 0): "up", (1, 0): "down", (0, -1): "left", (0, 1): "right"}
+            path = [a[i] for i in self.get_node_path(node)]
+            print("debug_path:", path)
+            #node.g = 0
+            return self.pacman_heuristic(node)
+
+    def get_node_path(self, node):
+        path = []
+        current = node
+        while current is not None and current.move is not None:
+            path.append(current.move)
+            current = current.parent
+        return path[::-1] # Return reversed path
+
 
     def astar(self):
+        heuristic_changed = False
         t = time.time()
-        while len(self.open_list) > 0 and time.time() - t < 600:
+        while len(self.open_list) > 0 and time.time() - t < 20:
             current_node = self.get_current_node()
-            # Found the goal CHANGE THIS TO GENERIC
             if current_node.position == self.end_node.position and self.number_of_diamonds_heuristic(current_node) == 0:
-                path = []
-                current = current_node
-                while current is not None and current.move is not None:
-                    path.append(current.move)
-                    current = current.parent
-                print("Solution length:", len(path))
+            #if self.number_of_holes_heuristic(current_node) == 0:
+                path = self.get_node_path(current_node)
                 print("Simulated map:", current_node.maze, sep="\n")
-                return path[::-1] # Return reversed path
-    
+                print("Solution length:", len(path))
+                return path
             # Generate children
             children = []
             for new_position in get_allowed_moves(current_node.position[0], current_node.position[1], current_node.maze):
@@ -175,17 +162,19 @@ class Solver:
                 # Child is on the closed list
                 if len([closed_child for closed_child in self.closed_list if closed_child == child]) > 0:
                     continue
-    
+                #maze_flat = current_node.maze.flatten()
+                #holes = [np.unravel_index(i, current_node.maze.shape) for i in np.where(maze_flat == 1)[0]]
+                #if len(holes) == 0 and not heuristic_changed:
+                #    self.closed_list = []
+                #    current_node.g = 0
+                #    self.open_list = [current_node]
+                #    heuristic_changed = True
+
                 # Create the f, g, and h values
                 child.g = current_node.g + 1
-                #child.h = min(self.pacman_heuristic(child), self.number_of_holes_heuristic(child))
-                #child.h = self.number_of_holes_heuristic(child)
-                #child.h = self.pacman_with_holes_heuristic(child)
-                child.h = max(self.heuristic_holes(child), self.number_of_holes_heuristic(child))
-                child.h = min(child.h, self.pacman_heuristic(child))
-                #child.h = self.pacman_heuristic(child)
-                #child.h = 0
-                child.h *= 1 + 0.1/100
+                #child.h = self.general_heuristic(child)
+                child.h = max(self.pacman_heuristic(child), self.holes_heuristic(child))
+                child.h *= (1 + 1/1000)
                 child.f = child.g + child.h
 
                 # Child is already in the open list
@@ -194,15 +183,13 @@ class Solver:
     
                 self.open_list.append(child)
         # didn't found the path but at least return the incomplete result
-        path = []
-        current = current_node
-        while current is not None and current.move is not None:
-            path.append(current.move)
-            current = current.parent
+        path = self.get_node_path(child)
+        print("Simulated map:", child.maze, sep="\n")
         print("Failed solution length:", len(path))
-        print("Final position:", current_node.position)
-        print("Simulated map:", current_node.maze, sep="\n")
-        return path[::-1] # Return reversed path
+        return path
+
+
+
 
 def maze_transition(maze, position, move):
     """
@@ -257,21 +244,24 @@ def get_allowed_moves(i, j, maze):
 
 
 if __name__ == '__main__':
-    MAP = map_reader.read_image("lvls/l04.png")
-    
-    MAP_as_list = MAP.flatten().tolist()
-    p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
-    try:
-        goal = np.unravel_index(MAP_as_list.index(4), MAP.shape)
-    except:
-        goal = np.unravel_index(MAP_as_list.index(11), MAP.shape)
-    print("THE MAP IS:\n", MAP)
-    print("INDY IS IN THE FOLLOWING COORDINATE:", p)
-    print("THE GOAL IS IN THE FOLLOWING COORDINATE:", goal)
-    
-    s = Solver(MAP, p, goal)
-    path = s.get_path()
-    path = s.get_path_as_actions()
-    print(path)
+    maps = ["{:02d}".format(i) for i in [4]]
+    for i in maps:
+        print(f"LVL {i}")
+        MAP = map_reader.read_image(f"lvls/l{i}.png")
+        
+        MAP_as_list = MAP.flatten().tolist()
+        p = np.unravel_index(MAP_as_list.index(6), MAP.shape)
+        try:
+            goal = np.unravel_index(MAP_as_list.index(4), MAP.shape)
+        except:
+            goal = np.unravel_index(MAP_as_list.index(11), MAP.shape)
+        print("THE MAP IS:\n", MAP)
+        print("INDY IS IN THE FOLLOWING COORDINATE:", p)
+        print("THE GOAL IS IN THE FOLLOWING COORDINATE:", goal)
+        
+        s = Solver(MAP, p, goal)
+        path = s.get_path()
+        path = s.get_path_as_actions()
+        print(path)
     
     
