@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pickle
+from levels import *
 
 PATH = "classes" 
 
@@ -30,7 +31,23 @@ def read_image(path, classifier=manual_classifier):
             E[i, j] = classifier(cell)
     return E
 
+def getLvl(level):
+    stage = 1
+    levels = [l01, l02, l03, l04, l05, l06, l07, l08, l09, l10,
+                 l11, l12, l13, l14, l15, l16, l17, l18, l19, l20]
+    for lv in levels:
+        count = 0
+        for i in range(len(level)):
+            for j in range(len(level[0])):
+                if(level[i][j] == lv[i][j]):
+                    count +=1
+        if(count >= 147):
+           return stage        
+        stage += 1
+    return ''
+
 
 if __name__ == '__main__':
     ENVIRONMENT = read_image("lvls/l15.png", manual_classifier)
     print(ENVIRONMENT)
+

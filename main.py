@@ -8,6 +8,8 @@ grabber.start()
 
 MAP = map_reader.read_image("E:/Downloads/Diamond/download.png")
 print(MAP)
+level = map_reader.getLvl(MAP)
+
 
 x=MAP.flatten().tolist()
 index = x.index(6)
@@ -21,7 +23,8 @@ for move in moves:
     
     swapIndex = movement.setMove(move, position)    
     dataOut = MAP[swapIndex[0]][swapIndex[1]]
-    canMove = movement.verifyColission(dataOut, position)
+    nexDataOut = MAP[swapIndex[4][0]][swapIndex[4][1]]
+    canMove = movement.verifyColission(dataOut, position, nexDataOut)
     if(canMove):
         swapResult = movement.swap(MAP, position, swapIndex)
         position = swapResult[1]
