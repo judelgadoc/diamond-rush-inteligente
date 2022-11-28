@@ -48,6 +48,9 @@ class Solver:
             if item.f < current_node.f:
                 current_node = item
                 current_index = index
+            elif item.h < current_node.h and item.f == current_node.f:
+                current_node = item
+                current_index = index
         self.open_list.pop(current_index)
         self.closed_list.append(current_node)
         return current_node
@@ -126,6 +129,9 @@ class Solver:
         doors = [np.unravel_index(i, node.maze.shape) for i in np.where(maze_flat == 9)[0]]
         if len(keys) == len(doors) - 1:
             closest_door = doors[np.array([ self.get_distance(node.position, i) for i in doors ]).argmin()]
+            if len(keys) == 0:
+                print(doors, len(doors))
+                print(closest_door)
             return self.get_distance(node.position, closest_door)
         elif len(keys) == len(doors):
             closest_key = keys[np.array([ self.get_distance(node.position, i) for i in keys ]).argmin()]
@@ -155,7 +161,7 @@ class Solver:
         heuristic_changed = False
         flag_two_doors = False
         t = time.time()
-        while len(self.open_list) > 0 and time.time() - t < 45:
+        while len(self.open_list) > 0 and time.time() - t < 60:
             current_node = self.get_current_node()
             maze_flat = current_node.maze.flatten()
             doors = [np.unravel_index(i, current_node.maze.shape) for i in np.where(maze_flat == 9)[0]]
@@ -163,7 +169,7 @@ class Solver:
             
             if current_node.position == self.end_node.position and self.number_of_diamonds_heuristic(current_node) == 0:
             #if current_node.position == (10, 6) and self.number_of_diamonds_heuristic(current_node) == 0:
-            #if current_node.position == (12, 5) and len(doors) == 2:
+            #if current_node.position == (12, 5) and len(doors) == 0:
                 path = self.get_node_path(current_node)
                 print("Simulated map:", current_node.maze, sep="\n")
                 print("Solution length:", len(path))
@@ -195,7 +201,7 @@ class Solver:
                 child.g = current_node.g + 1
                 child.h = self.general_heuristic(child, heuristic_changed)
                 #child.h = self.keys_heuristic(child)
-                child.h *= (1 + 1/1000)
+                #child.h *= (1 + 1/1000)
                 child.f = child.g + child.h
 
                 # Child is already in the open list
@@ -308,7 +314,7 @@ def get_allowed_moves(i, j, maze):
 
 
 if __name__ == '__main__':
-    maps = ["{:02d}".format(i) for i in [7]]
+    maps = ["{:02d}".format(i) for i in [1,2,4,7]]
     for i in maps:
         print(f"LVL {i}")
         MAP = map_reader.read_image(f"lvls/l{i}.png")
