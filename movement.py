@@ -189,7 +189,10 @@ def swap(MAP, pos_in, pos_out):
 
 if __name__ == '__main__':
     time.sleep(1)
-    moves = ['right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'down', 'right', 'right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'right', 'up', 'right', 'down', 'down', 'down', 'right', 'down', 'up', 'up', 'down', 'left', 'up', 'up', 'right', 'right', 'up', 'right', 'down', 'up', 'up', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'up', 'down', 'down', 'down', 'left', 'left', 'right']
+    # lvl04
+    #moves = ['right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'down', 'right', 'right', 'right', 'right', 'right', 'down', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'right', 'up', 'right', 'down', 'down', 'down', 'right', 'up', 'down', 'left', 'up', 'up', 'right', 'right', 'up', 'right', 'down', 'up', 'up', 'up', 'right', 'left', 'down', 'down', 'down', 'left', 'left', 'down', 'down', 'down', 'up', 'up', 'up', 'right', 'right', 'down', 'down']
+    moves = ['right', 'right', 'down', 'down', 'down', 'right', 'down', 'down', 'down', 'left', 'down', 'left', 'left', 'up', 'up', 'up', 'right', 'right', 'up', 'right', 'left', 'up', 'up', 'up', 'down', 'down', 'down', 'right', 'left', 'down', 'up', 'right', 'down', 'down', 'right']
+    moves = ['right', 'up', 'right', 'down', 'down', 'down', 'left', 'down', 'down', 'left', 'left', 'down', 'down', 'right', 'right', 'right', 'right', 'right', 'right', 'up', 'up', 'up', 'right', 'up', 'up', 'down', 'down', 'left', 'down', 'down', 'right', 'left', 'down', 'left', 'left', 'left', 'left', 'left', 'down', 'down', 'left', 'right', 'up', 'up', 'right', 'right', 'right', 'down', 'down', 'down']
     for move in moves:
         signalMove(move)
 

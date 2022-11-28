@@ -13,7 +13,7 @@ def manual_classifier(cell):
     for n,i in enumerate(classes_array):
         temp2 = []
         for j in i:
-            temp2.append(np.mean(cell - j))
+            temp2.append(np.mean(cell - j)**2)
         temp[n] = np.min(temp2)
     return np.argmin(temp)
 

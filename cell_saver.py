@@ -56,6 +56,9 @@ def export_classes():
 #save_cell("/tmp/l02-3.png", 12, 8, "personaje", "l02-personaje-3.png")
 #save_cell("/tmp/l02-4.png", 11, 8, "personaje", "l02-personaje-4.png")
 
+#for i in range(2, 9):
+#    save_cell("lvls/l16.png", 3, i, "lava", f"l16-lava-{i}.png")
+
 classes_array = load_classes()
 
 export_classes()
